@@ -46,11 +46,13 @@
 #define PATH_GET_MAP "/getmap"
 #define PATH_GRAPH "/graph"
 #define PATH_PIE_CHART "/pie"
+#define PATH_HEALTHY "/healthy"
 #define PATH_HISTORY "/history"
 #define PATH_HISTORY_RESET "/historyreset"
 #define PATH_LEARN_SPAM "/learnspam"
 #define PATH_LEARN_HAM "/learnham"
 #define PATH_METRICS "/metrics"
+#define PATH_READY "/ready"
 #define PATH_SAVE_ACTIONS "/saveactions"
 #define PATH_SAVE_SYMBOLS "/savesymbols"
 #define PATH_SAVE_MAP "/savemap"
@@ -1577,6 +1579,46 @@ rspamd_controller_handle_lua_history (lua_State *L,
 	return;
 err:
 	rspamd_controller_send_error (conn_ent, 500, "Internal error");
+}
+
+/*
+ * Healthy command handler:
+ * request: /healthy
+ * headers: Password
+ * reply: json {"success":true}
+ */
+static int
+rspamd_controller_handle_healthy (struct rspamd_http_connection_entry *conn_ent,
+        struct rspamd_http_message *msg)
+{
+    struct rspamd_controller_session *session = conn_ent->ud;
+
+    if (!rspamd_controller_check_password (conn_ent, session, msg, FALSE)) {
+        return 0;
+    }
+
+    rspamd_controller_send_string (conn_ent, "{\"success\":true}");
+    return 0;
+}
+
+/*
+ * Ready command handler:
+ * request: /ready
+ * headers: Password
+ * reply: json {"success":true} or {"error":"error message"}
+ */
+static int
+rspamd_controller_handle_ready (struct rspamd_http_connection_entry *conn_ent,
+        struct rspamd_http_message *msg)
+{
+    struct rspamd_controller_session *session = conn_ent->ud;
+
+    if (!rspamd_controller_check_password (conn_ent, session, msg, FALSE)) {
+        return 0;
+    }
+
+    rspamd_controller_send_string (conn_ent, "{\"success\":true}");
+    return 0;
 }
 
 /*
@@ -3894,6 +3936,12 @@ start_controller_worker (struct rspamd_worker *worker)
 	rspamd_http_router_add_path (ctx->http,
 			PATH_GRAPH,
 			rspamd_controller_handle_graph);
+	rspamd_http_router_add_path (ctx->http,
+			PATH_HEALTHY,
+			rspamd_controller_handle_healthy);
+	rspamd_http_router_add_path (ctx->http,
+			PATH_READY,
+			rspamd_controller_handle_ready);
 	rspamd_http_router_add_path (ctx->http,
 			PATH_HISTORY,
 			rspamd_controller_handle_history);

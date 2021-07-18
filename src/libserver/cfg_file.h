@@ -481,12 +481,13 @@ struct rspamd_config {
 
 	GList *classify_headers;                        /**< list of headers using for statistics				*/
 	struct module_s **compiled_modules;                /**< list of compiled C modules							*/
-	struct worker_s **compiled_workers;                /**< list of compiled C modules							*/struct rspamd_log_format *log_format;            /**< parsed log format									*/
+	struct worker_s **compiled_workers;                /**< list of compiled C modules							*/
+	struct rspamd_log_format *log_format;            /**< parsed log format									*/
 	gchar *log_format_str;                            /**< raw log format string								*/
 
 	struct rspamd_external_libs_ctx *libs_ctx;        /**< context for external libraries						*/
 	struct rspamd_monitored_ctx *monitored_ctx;        /**< context for monitored resources					*/
-	struct rspamd_redis_pool *redis_pool;            /**< redis connectiosn pool								*/
+	struct rspamd_redis_pool *redis_pool;            /**< redis connection pool								*/
 
 	struct rspamd_re_cache *re_cache;                /**< static regexp cache								*/
 
